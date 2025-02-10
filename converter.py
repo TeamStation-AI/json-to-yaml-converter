@@ -1,51 +1,63 @@
 import json
 import yaml
-import argparse
 
-def json_to_yaml(json_file, yaml_file):
-    """Converts a JSON file to YAML format."""
-    try:
-        with open(json_file, 'r', encoding='utf-8') as jfile:
-            data = json.load(jfile)
+def json_to_yaml(json_string, indent=2, sort_keys=False):
+  """
+  Converts a JSON string to a YAML string.
 
-        with open(yaml_file, 'w', encoding='utf-8') as yfile:
-            yaml.dump(data, yfile, default_flow_style=False, allow_unicode=True)
+  Args:
+    json_string: The JSON string to convert.
+    indent: (Optional) The indentation level for the YAML output. Defaults to 2.
+    sort_keys: (Optional) Whether to sort the keys in the YAML output. Defaults to False.
 
-        print(f"Successfully converted {json_file} to {yaml_file}")
-    except Exception as e:
-        print(f"Error: {e}")
+  Returns:
+    A YAML string representing the JSON data.
+    Returns None if the input JSON is invalid.
+  """
+  try:
+    json_data = json.loads(json_string)
+  except json.JSONDecodeError as e:
+    print(f"Error: Invalid JSON - {e}")
+    return None
 
+  try:
+    yaml_string = yaml.dump(json_data, indent=indent, sort_keys=sort_keys)
+    return yaml_string
+  except yaml.YAMLError as e:
+    print(f"Error: Could not convert JSON to YAML - {e}")
+    return None
+
+# Example usage:
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert JSON to YAML")
-    parser.add_argument("json_file", help="Path to the JSON file")
-    parser.add_argument("yaml_file", help="Path to save the YAML output")
-    args = parser.parse_args()
+  json_data = """
+  {
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York",
+    "hobbies": ["reading", "hiking", "coding"],
+    "address": {
+      "street": "123 Main St",
+      "zip": "10001"
+    }
+  }
+  """
 
-    json_to_yaml(args.json_file, args.yaml_file)
-  import json
-import yaml
-import argparse
+  yaml_data = json_to_yaml(json_data)
 
-def json_to_yaml(json_file, yaml_file):
-    """Converts a JSON file to YAML format."""
-    try:
-        with open(json_file, 'r', encoding='utf-8') as jfile:
-            data = json.load(jfile)
+  if yaml_data:
+    print("YAML output:")
+    print(yaml_data)
 
-        with open(yaml_file, 'w', encoding='utf-8') as yfile:
-            yaml.dump(data, yfile, default_flow_style=False, allow_unicode=True)
+  print("\n--- Example with sorting and custom indent ---\n")
 
-        print(f"Successfully converted {json_file} to {yaml_file}")
-    except Exception as e:
-        print(f"Error: {e}")
+  yaml_data_sorted = json_to_yaml(json_data, indent=4, sort_keys=True)
+  if yaml_data_sorted:
+    print("YAML output (sorted and indented):")
+    print(yaml_data_sorted)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Convert JSON to YAML")
-    parser.add_argument("json_file", help="Path to the JSON file")
-    parser.add_argument("yaml_file", help="Path to save the YAML output")
-    args = parser.parse_args()
-
-    json_to_yaml(args.json_file, args.yaml_file)
+  print("\n--- Example with invalid JSON ---\n")
+  invalid_json = "{'name': 'Invalid' "  # Missing closing brace
+  yaml_data_invalid = json_to_yaml(invalid_json)  # Will print error and return None
 
 # README.md
 """
